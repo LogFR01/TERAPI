@@ -70,7 +70,7 @@ async def search_terabox(query, source):
             return []
 
 @app.get("/{category}")
-async def search(category: str, query: str = Query(...), key: str = Query(...), request: Request):
+async def search(category: str, request: Request, query: str = Query(...), key: str = Query(...)):
     if not check_api_key(key):
         raise HTTPException(status_code=403, detail="Clé API invalide ou expirée")
     category_map = {"fivem": "FiveM", "all": "All", "snus": "Snusbase", "intelx": "IntelX", "nazapi": "NazAPI", "gmail": "Gmail"}
