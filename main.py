@@ -66,14 +66,14 @@ async def search_terabox(query, source):
     await page.fill("input[name='password']", "marvine8")
     await page.click("button[type='submit']")
     await asyncio.sleep(5)
-    
+
     error_message = await page.query_selector("div.error-message")
     if error_message:
         raise Exception("Echec de la connexion à Terabox")
-    
+
     await page.goto(f"https://www.terabox.com/{source}")
     await asyncio.sleep(3)
-    
+
     files = await page.evaluate(f"""() => {{
         let results = [];
         document.querySelectorAll(".file-name").forEach(file => {{
