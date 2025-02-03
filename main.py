@@ -48,8 +48,8 @@ async def search_terabox(query, source):
         page = await browser.new_page()
         await page.goto("https://www.terabox.com/")
         try:
-            await page.fill("input[name='email']", "ton_email")
-            await page.fill("input[name='password']", "ton_mot_de_passe")
+            await page.fill("input[name='email']", "dkwblinks@gmail.com")
+            await page.fill("input[name='password']", "marvine8")
             await page.click("button[type='submit']")
             await asyncio.sleep(5)
             await page.goto(f"https://www.terabox.com/{source}")
