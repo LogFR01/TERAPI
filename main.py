@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query, HTTPException, Request
 from pydantic import BaseModel
 import json, os, hashlib, asyncio, time
 from playwright.async_api import async_playwright
+import subprocess
 
 app = FastAPI()
 
@@ -37,6 +38,18 @@ def check_api_key(api_key):
         return False
     return True
 
+def install_playwright():
+    """Vérifie et installe Playwright + Chromium si nécessaire"""
+    try:
+        subprocess.run(["playwright", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        print("🔧 Playwright n'est pas installé. Installation en cours...")
+        subprocess.run(["playwright", "install", "--with-deps"], check=True)
+    except FileNotFoundError:
+        print("🔧 Playwright introuvable. Installation en cours...")
+        subprocess.run(["pip", "install", "playwright"], check=True)
+        subprocess.run(["playwright", "install", "--with-deps"], check=True)
+
 async def log_search(apikey, ip, search, source):
     logs = load_json("logs")
     logs.append({"apikey": apikey, "ip": ip, "search": search, "source": source, "timestamp": int(time.time())})
@@ -68,6 +81,10 @@ async def search_terabox(query, source):
         except:
             await browser.close()
             return []
+
+@app.get("/")
+async def welcome():
+    return {"message": "Bienvenue sur TERAPI | ZOIDBERG : L'API de recherche Terabox ! Pour rechercher, utilisez la route '/{category}' avec les paramètres 'query' et 'key'."}
 
 @app.get("/{category}")
 async def search(category: str, request: Request, query: str = Query(...), key: str = Query(...)):
@@ -140,5 +157,6 @@ async def deactivate_key(target_key: str = Query(...), key: str = Query(...)):
     return {"status": "success", "message": "Clé désactivée"}
 
 if __name__ == "__main__":
+    install_playwright()  # Assure l'installation de Playwright
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
