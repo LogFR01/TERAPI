@@ -61,34 +61,34 @@ async def search_terabox(query, source):
         page = await browser.new_page()
         await page.goto("https://www.terabox.com/")
         try:
-    # Remplir les champs de connexion
-    await page.fill("input[name='email']", "dkwblinks@gmail.com")
-    await page.fill("input[name='password']", "marvine8")
-    await page.click("button[type='submit']")
-    await asyncio.sleep(5)
-
-    error_message = await page.query_selector("div.error-message")
-    if error_message:
-        raise Exception("Echec de la connexion à Terabox")
-
-    await page.goto(f"https://www.terabox.com/{source}")
-    await asyncio.sleep(3)
-
-    files = await page.evaluate(f"""() => {{
-        let results = [];
-        document.querySelectorAll(".file-name").forEach(file => {{
-            if (file.innerText.includes("{query}")) {{
-                results.push({{"filename": file.innerText}});
-            }}
-        }});
-        return results;
-    }}""")
-    await browser.close()
-    return files
-except Exception as e:
-    await browser.close()
-    print(f"Erreur lors de la connexion ou de l'extraction des fichiers : {e}")
-    return []
+            # Remplir les champs de connexion
+            await page.fill("input[name='email']", "dkwblinks@gmail.com")
+            await page.fill("input[name='password']", "marvine8")
+            await page.click("button[type='submit']")
+            await asyncio.sleep(5)
+            
+            error_message = await page.query_selector("div.error-message")
+            if error_message:
+                raise Exception("Echec de la connexion à Terabox")
+            
+            await page.goto(f"https://www.terabox.com/{source}")
+            await asyncio.sleep(3)
+            
+            files = await page.evaluate(f"""() => {{
+                let results = [];
+                document.querySelectorAll(".file-name").forEach(file => {{
+                    if (file.innerText.includes("{query}")) {{
+                        results.push({{"filename": file.innerText}});
+                    }}
+                }});
+                return results;
+            }}""")
+            await browser.close()
+            return files
+        except Exception as e:
+            await browser.close()
+            print(f"Erreur lors de la connexion ou de l'extraction des fichiers : {e}")
+            return []
 
 @app.get("/")
 async def welcome():
